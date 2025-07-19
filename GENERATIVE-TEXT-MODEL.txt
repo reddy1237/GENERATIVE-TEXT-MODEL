@@ -1,0 +1,59 @@
+import random
+from collections import defaultdict
+
+class MarkovChainTextGenerator:
+    def __init__(self):
+        self.model = defaultdict(list)
+
+    def train(self, text):
+        """
+        Train the model on the given text.
+        Args:
+        - text (str): The training text.
+        """
+        words = text.split()
+        for i in range(len(words) - 1):
+            self.model[words[i]].append(words[i + 1])
+
+    def generate(self, start_word, max_words=50):
+        """
+        Generate text starting from the given word.
+        Args:
+        - start_word (str): The word to start text generation.
+        - max_words (int): Maximum number of words to generate.
+        Returns:
+        - str: The generated text.
+        """
+        if start_word not in self.model:
+            return "The start word is not in the training data."
+        
+        current_word = start_word
+        output = [current_word]
+
+        for _ in range(max_words - 1):
+            if current_word not in self.model:
+                break
+            next_word = random.choice(self.model[current_word])
+            output.append(next_word)
+            current_word = next_word
+
+        return " ".join(output)
+
+
+# Main script
+if __name__ == "__main__":
+    # Example training text
+    training_text = """
+    Artificial intelligence in healthcare is transforming the way we diagnose and treat diseases.
+    With advancements in AI, doctors can make faster and more accurate decisions.
+    AI also helps in personalizing medicine, improving patient outcomes, and reducing costs.
+    """
+
+    # Initialize and train the generator
+    generator = MarkovChainTextGenerator()
+    generator.train(training_text)
+
+    # User prompt for starting word
+    start_word = input("Enter a word to start generating text: ").strip()
+    print("\nGenerated Text:\n")
+    print(generator.generate(start_word, max_words=50))
